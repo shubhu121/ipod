@@ -279,18 +279,42 @@ export default function Home() {
   const ytSrc = `https://www.youtube.com/embed/${song.id}?autoplay=${isPlaying ? 1 : 0}&enablejsapi=1&loop=0&controls=0`;
 
   /* ── Shared style helpers ── */
-  const wheelBtnInset = (isActive: boolean) => ({
-    background: "#0c0c0c",
+  /* Deep inset well — thick dark ring, pronounced concave carve */
+  const wheelBtnInsetPill = (isActive: boolean) => ({
+    background: "#050505",
+    borderRadius: "14px",
+    padding: "4px",
     boxShadow: isActive
-      ? "0 0.5px 0 rgba(255,255,255,0.25), 0 1px 3px rgba(0,0,0,0.6) inset"
-      : "0 0.5px 0 rgba(255,255,255,0.3), 0 2px 6px rgba(0,0,0,0.9) inset",
+      ? "0 1px 0 rgba(255,255,255,0.18), 0 2px 5px rgba(0,0,0,0.95) inset, 0 0 0 1.5px #0a0a0a"
+      : "0 1px 0 rgba(255,255,255,0.2), 0 3px 8px rgba(0,0,0,0.95) inset, 0 0 0 1.5px #080808",
   });
 
-  const wheelBtnRaised = (isActive: boolean) => ({
-    background: "linear-gradient(to bottom, #222, #1a1a1a)",
+  const wheelBtnInsetCircle = (isActive: boolean) => ({
+    background: "#050505",
+    borderRadius: "50%",
+    padding: "4px",
     boxShadow: isActive
-      ? "0 1px 3px rgba(0,0,0,0.7) inset"
-      : "0 0.5px 0 rgba(255,255,255,0.1) inset, 0 1px 1px rgba(255,255,255,0.06) inset, 0 3px 6px rgba(0,0,0,0.5)",
+      ? "0 1px 0 rgba(255,255,255,0.18), 0 2px 5px rgba(0,0,0,0.95) inset, 0 0 0 2px #080808"
+      : "0 1px 0 rgba(255,255,255,0.2), 0 3px 8px rgba(0,0,0,0.95) inset, 0 0 0 2px #0a0a0a",
+  });
+
+  /* Raised button surface — sits inside inset well */
+  const wheelBtnRaisedPill = (isActive: boolean) => ({
+    background: "linear-gradient(to bottom, #202020, #181818)",
+    borderRadius: "10px",
+    boxShadow: isActive
+      ? "0 1px 4px rgba(0,0,0,0.8) inset"
+      : "0 0.5px 0 rgba(255,255,255,0.08) inset, 0 1px 1px rgba(255,255,255,0.04) inset, 0 2px 4px rgba(0,0,0,0.4)",
+    transition: "transform 80ms ease, box-shadow 80ms ease",
+    transform: isActive ? "scale(0.95)" : "scale(1)",
+  });
+
+  const wheelBtnRaisedCircle = (isActive: boolean) => ({
+    background: "linear-gradient(to bottom, #1f1f1f, #181818)",
+    borderRadius: "50%",
+    boxShadow: isActive
+      ? "0 1px 4px rgba(0,0,0,0.8) inset"
+      : "0 0.5px 0 rgba(255,255,255,0.08) inset, 0 1px 1px rgba(255,255,255,0.04) inset, 0 3px 6px rgba(0,0,0,0.5)",
     transition: "transform 80ms ease, box-shadow 80ms ease",
     transform: isActive ? "scale(0.94)" : "scale(1)",
   });
@@ -595,53 +619,79 @@ export default function Home() {
           {/* ════════════════ CLICK WHEEL ════════════════ */}
           <div className="flex justify-center">
             <div
-              className="relative w-[210px] h-[210px] rounded-full"
+              className="relative rounded-full"
               style={{
-                background: "linear-gradient(to bottom, #1d1d1d, #171717)",
+                width: "240px",
+                height: "240px",
+                background: "linear-gradient(to bottom, #1c1c1c, #161616)",
                 boxShadow: `
-                  0 0.5px 0 rgba(255,255,255,0.06),
-                  0 2px 8px rgba(0,0,0,0.85) inset,
-                  0 -1px 0 rgba(255,255,255,0.04) inset
+                  0 0.5px 0 rgba(255,255,255,0.05),
+                  0 3px 10px rgba(0,0,0,0.9) inset,
+                  0 -1px 0 rgba(255,255,255,0.03) inset
                 `,
               }}
             >
-              {/* Subtle concentric ring texture */}
+              {/* ── Radial line texture across wheel ── */}
+              {Array.from({ length: 60 }).map((_, i) => {
+                const angle = (360 / 60) * i;
+                return (
+                  <div
+                    key={`radial-${i}`}
+                    className="absolute pointer-events-none"
+                    style={{
+                      width: "1px",
+                      height: "120px",
+                      background: `linear-gradient(to bottom, rgba(255,255,255,${i % 5 === 0 ? 0.025 : 0.012}), transparent)`,
+                      top: "50%",
+                      left: "50%",
+                      transformOrigin: "0 0",
+                      transform: `rotate(${angle}deg) translate(-0.5px, -120px)`,
+                    }}
+                  />
+                );
+              })}
+
+              {/* ── Outer ring bevel ── */}
               <div
-                className="absolute inset-[4px] rounded-full pointer-events-none"
-                style={{ border: "1px solid rgba(255,255,255,0.02)" }}
-              />
-              <div
-                className="absolute inset-[40px] rounded-full pointer-events-none"
-                style={{ border: "1px solid rgba(255,255,255,0.015)" }}
+                className="absolute inset-[2px] rounded-full pointer-events-none"
+                style={{ border: "1px solid rgba(255,255,255,0.025)" }}
               />
 
-              {/* ── MENU (top) ── */}
+              {/* ── Inner ring around center zone ── */}
+              <div
+                className="absolute rounded-full pointer-events-none"
+                style={{
+                  inset: "52px",
+                  border: "1px solid rgba(255,255,255,0.02)",
+                }}
+              />
+
+              {/* ── MENU button (top) ── */}
               <button
                 id="btn-menu"
                 onClick={() => {
                   pressButton("menu");
                   handleMenuToggle();
                 }}
-                className="absolute top-[14px] left-1/2 -translate-x-1/2 z-10 cursor-pointer"
+                className="absolute top-[12px] left-1/2 -translate-x-1/2 z-10 cursor-pointer"
               >
-                {/* Inset well */}
-                <div
-                  className="rounded-[10px] p-[3px]"
-                  style={wheelBtnInset(activeBtn === "menu")}
-                >
-                  {/* Raised button */}
+                <div style={wheelBtnInsetPill(activeBtn === "menu")}>
                   <div
-                    className="w-[48px] h-[26px] rounded-[8px] flex items-center justify-center"
-                    style={wheelBtnRaised(activeBtn === "menu")}
+                    className="flex items-center justify-center"
+                    style={{
+                      width: "76px",
+                      height: "30px",
+                      ...wheelBtnRaisedPill(activeBtn === "menu"),
+                    }}
                   >
-                    <span className="text-[9px] font-semibold text-gray-400 tracking-[0.12em] uppercase">
+                    <span className="text-[10px] font-semibold text-gray-400 tracking-[0.25em] uppercase">
                       Menu
                     </span>
                   </div>
                 </div>
               </button>
 
-              {/* ── PREV (left) ── */}
+              {/* ── PREV button (left) ── */}
               <button
                 id="btn-prev"
                 onClick={() => {
@@ -649,15 +699,16 @@ export default function Home() {
                   if (screenView === "menu") handleMenuNav("up");
                   else handlePrev();
                 }}
-                className="absolute left-[12px] top-1/2 -translate-y-1/2 z-10 cursor-pointer"
+                className="absolute left-[8px] top-1/2 -translate-y-1/2 z-10 cursor-pointer"
               >
-                <div
-                  className="rounded-full p-[3px]"
-                  style={wheelBtnInset(activeBtn === "prev")}
-                >
+                <div style={wheelBtnInsetCircle(activeBtn === "prev")}>
                   <div
-                    className="w-[34px] h-[34px] rounded-full flex items-center justify-center"
-                    style={wheelBtnRaised(activeBtn === "prev")}
+                    className="flex items-center justify-center"
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      ...wheelBtnRaisedCircle(activeBtn === "prev"),
+                    }}
                   >
                     <span className="text-gray-400">
                       <PrevIcon />
@@ -666,7 +717,7 @@ export default function Home() {
                 </div>
               </button>
 
-              {/* ── NEXT (right) ── */}
+              {/* ── NEXT button (right) ── */}
               <button
                 id="btn-next"
                 onClick={() => {
@@ -674,15 +725,16 @@ export default function Home() {
                   if (screenView === "menu") handleMenuNav("down");
                   else handleNext();
                 }}
-                className="absolute right-[12px] top-1/2 -translate-y-1/2 z-10 cursor-pointer"
+                className="absolute right-[8px] top-1/2 -translate-y-1/2 z-10 cursor-pointer"
               >
-                <div
-                  className="rounded-full p-[3px]"
-                  style={wheelBtnInset(activeBtn === "next")}
-                >
+                <div style={wheelBtnInsetCircle(activeBtn === "next")}>
                   <div
-                    className="w-[34px] h-[34px] rounded-full flex items-center justify-center"
-                    style={wheelBtnRaised(activeBtn === "next")}
+                    className="flex items-center justify-center"
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      ...wheelBtnRaisedCircle(activeBtn === "next"),
+                    }}
                   >
                     <span className="text-gray-400">
                       <NextIcon />
@@ -691,7 +743,7 @@ export default function Home() {
                 </div>
               </button>
 
-              {/* ── PLAY/PAUSE (bottom) ── */}
+              {/* ── PLAY/PAUSE button (bottom) ── */}
               <button
                 id="btn-playpause"
                 onClick={() => {
@@ -699,15 +751,16 @@ export default function Home() {
                   if (screenView === "menu") handleMenuSelect(menuIndex);
                   else handlePlayPause();
                 }}
-                className="absolute bottom-[14px] left-1/2 -translate-x-1/2 z-10 cursor-pointer"
+                className="absolute bottom-[12px] left-1/2 -translate-x-1/2 z-10 cursor-pointer"
               >
-                <div
-                  className="rounded-[10px] p-[3px]"
-                  style={wheelBtnInset(activeBtn === "play")}
-                >
+                <div style={wheelBtnInsetPill(activeBtn === "play")}>
                   <div
-                    className="w-[48px] h-[26px] rounded-[8px] flex items-center justify-center gap-1"
-                    style={wheelBtnRaised(activeBtn === "play")}
+                    className="flex items-center justify-center"
+                    style={{
+                      width: "76px",
+                      height: "30px",
+                      ...wheelBtnRaisedPill(activeBtn === "play"),
+                    }}
                   >
                     <span className="text-gray-400">
                       {isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -716,7 +769,7 @@ export default function Home() {
                 </div>
               </button>
 
-              {/* ── CENTER SELECT ── */}
+              {/* ── CENTER SELECT button ── */}
               <button
                 id="btn-select"
                 onClick={() => {
@@ -730,50 +783,57 @@ export default function Home() {
                 }}
                 className="absolute inset-0 m-auto z-10 cursor-pointer"
                 style={{
-                  width: "72px",
-                  height: "72px",
+                  width: "86px",
+                  height: "86px",
                   borderRadius: "50%",
-                  background: "linear-gradient(to bottom, #252525, #1e1e1e)",
+                  background: "linear-gradient(to bottom, #242424, #1c1c1c)",
                   boxShadow:
                     activeBtn === "select"
-                      ? "0 1px 5px rgba(0,0,0,0.8) inset"
+                      ? "0 2px 6px rgba(0,0,0,0.85) inset"
                       : `
-                      0 0.5px 0px rgba(255,255,255,0.12) inset,
-                      0 1px 1.5px rgba(255,255,255,0.08) inset,
-                      0 4px 10px rgba(0,0,0,0.6)
+                      0 0.5px 0px rgba(255,255,255,0.1) inset,
+                      0 1px 2px rgba(255,255,255,0.06) inset,
+                      0 6px 14px rgba(0,0,0,0.6)
                     `,
                   transition: "transform 80ms ease, box-shadow 80ms ease",
                   transform:
-                    activeBtn === "select" ? "scale(0.96)" : "scale(1)",
+                    activeBtn === "select" ? "scale(0.97)" : "scale(1)",
                 }}
               >
-                {/* Inner ring on center button */}
+                {/* Outer ring on center button */}
                 <div
-                  className="absolute inset-[3px] rounded-full pointer-events-none"
+                  className="absolute inset-[-1px] rounded-full pointer-events-none"
                   style={{
-                    border: "1px solid rgba(255,255,255,0.04)",
+                    border: "1.5px solid rgba(255,255,255,0.04)",
+                  }}
+                />
+                {/* Inner ring */}
+                <div
+                  className="absolute inset-[4px] rounded-full pointer-events-none"
+                  style={{
+                    border: "1px solid rgba(255,255,255,0.025)",
                   }}
                 />
               </button>
 
-              {/* ── Tick marks around wheel ── */}
-              {Array.from({ length: 32 }).map((_, i) => {
-                const angle = (360 / 32) * i;
-                const isCardinal = i % 8 === 0;
+              {/* ── Tick marks around outer edge ── */}
+              {Array.from({ length: 40 }).map((_, i) => {
+                const angle = (360 / 40) * i;
+                const isCardinal = i % 10 === 0;
                 return (
                   <div
-                    key={i}
+                    key={`tick-${i}`}
                     className="absolute pointer-events-none"
                     style={{
                       width: "1px",
-                      height: isCardinal ? "7px" : "3px",
+                      height: isCardinal ? "8px" : "4px",
                       background: isCardinal
-                        ? "rgba(255,255,255,0.05)"
+                        ? "rgba(255,255,255,0.06)"
                         : "rgba(255,255,255,0.02)",
                       top: "50%",
                       left: "50%",
                       transformOrigin: "0 0",
-                      transform: `rotate(${angle}deg) translate(-0.5px, -100px)`,
+                      transform: `rotate(${angle}deg) translate(-0.5px, -116px)`,
                     }}
                   />
                 );
